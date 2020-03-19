@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WebClient
 {
     class Program
     {
-        private static string _url1;
-        private static string _url2;
+        private static string _baseUrl = "http://crf630/ss";
+        private static string _url1 = $"{_baseUrl}/home/about";
+        private static string _url2 = $"{_baseUrl}/home/contact";
+        private static string _url3 = $"{_baseUrl}/HelloService.asmx/HelloWorld";
 
         static void Main(string[] args)
         {
-            _url1 = "http://crf630/ss/home/about";
             var webRequest = (HttpWebRequest)HttpWebRequest.Create(_url1);
-            
+
             webRequest.PreAuthenticate = true;
             webRequest.UnsafeAuthenticatedConnectionSharing = true;
             webRequest.Method = "GET";
@@ -30,7 +27,7 @@ namespace WebClient
             Console.WriteLine(new StreamReader(resp.GetResponseStream()).ReadToEnd());
             resp.Close();
 
-            _url2 = "http://crf630/ss/home/contact";
+
             webRequest = (HttpWebRequest)HttpWebRequest.Create(_url2);
             webRequest.PreAuthenticate = true;
             webRequest.UnsafeAuthenticatedConnectionSharing = true;
@@ -43,8 +40,49 @@ namespace WebClient
             resp = webRequest.GetResponse();
             Console.WriteLine(new StreamReader(resp.GetResponseStream()).ReadToEnd());
             resp.Close();
+
+            // SOAP call
+            webRequest = (HttpWebRequest) HttpWebRequest.Create(_url3);
+            webRequest.PreAuthenticate = true;
+            webRequest.UnsafeAuthenticatedConnectionSharing = true;
+            webRequest.Method = "POST";
+            webRequest.Timeout = System.Threading.Timeout.Infinite;
+            webRequest.Credentials = CredentialCache.DefaultCredentials;
+            webRequest.ContentType = "application/soap+xml";
+            webRequest.ContentLength = 0;
+            webRequest.KeepAlive = true;
+            webRequest.Accept = "*";
+            resp = webRequest.GetResponse();
+            Console.WriteLine(new StreamReader(resp.GetResponseStream()).ReadToEnd());
+            resp.Close();
+
+            webRequest = (HttpWebRequest)HttpWebRequest.Create(_url3);
+            webRequest.PreAuthenticate = true;
+            webRequest.UnsafeAuthenticatedConnectionSharing = true;
+            webRequest.Method = "POST";
+            webRequest.Timeout = System.Threading.Timeout.Infinite;
+            webRequest.Credentials = CredentialCache.DefaultCredentials;
+            webRequest.ContentType = "application/soap+xml";
+            webRequest.ContentLength = 0;
+            webRequest.KeepAlive = true;
+            webRequest.Accept = "*";
+            resp = webRequest.GetResponse();
+            Console.WriteLine(new StreamReader(resp.GetResponseStream()).ReadToEnd());
+            resp.Close();
+
             Console.ReadKey();
 
         }
+    }
+
+    static class Constants
+    {
+        static readonly string HelloWorldPayload = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<soap12:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap12=""http://www.w3.org/2003/05/soap-envelope"">
+  <soap12:Body>
+    <HelloWorld xmlns=""http://tempuri.org/"" />
+  </soap12:Body>
+</soap12:Envelope>";
+
     }
 }
